@@ -5,12 +5,15 @@ Built with creativity, code, and a little chaos.
 
 ---
 
-### ⚙️ Behind the Scenes
+## 🌐 Live Preview
 
-🎨 **Wireframe & Prototype** — Designed in Figma  
-🤖 **Development** — Built with Claude  
-🚀 **Deployment** — Hosted on Vercel  
+🔗 **View the Portfolio Here:**  
+https://jiya17batra.github.io/Files-of-a-Designer/
 
 ---
 
-Made with curiosity, caffeine, and countless iterations.
+## ⚙️ Behind the Scenes
+
+- Wireframe & Prototype — Figma  
+- Development — Claude  
+- Deployment — Vercel
