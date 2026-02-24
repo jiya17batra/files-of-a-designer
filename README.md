@@ -20,4 +20,6 @@ https://jiya17batra.github.io/Files-of-a-Designer/
 
 - ## 🎬 Live Preview
 
-![Portfolio Demo](assets/demo.gif)
+<p align="center">
+  <img src="demo.gif" width="800" alt="Portfolio Demo"/>
+</p>
