@@ -16,9 +16,11 @@ https://jiya17batra.github.io/Files-of-a-Designer/
 
 - Wireframe & Prototype — Figma  
 - Development — Claude  
-- Deployment — Vercel
+- Deployment — Vercel  
 
-- ## 🎬 Live Preview
+---
+
+## 🎬 Demo Preview
 
 <p align="center">
   <img src="demo.gif" width="800" alt="Portfolio Demo"/>
