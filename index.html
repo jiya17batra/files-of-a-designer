@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio- Files of a Designer</title>
+    
+    <style>
+        /* CSS FROM YOUR CODE */
+        @import url('https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap');
+        @import url('https://unpkg.com/normalize.css') layer(normalize);
+
+        @layer normalize, base, demo, transition;
+
+        @layer transition {
+            [data-theme='dark']::view-transition-new(root),
+            [data-theme='dark']::view-transition-old(root) {
+                animation-duration: 0s;
+            }
+            :root:has(#flicker:checked)[data-theme='light']::view-transition-group(root) {
+                animation-timing-function: var(--flicker);
+            }
+        }
+
+        @layer demo {
+            :root {
+                accent-color: red;
+                --cord: color-mix(in lch, canvas, canvasText 75%);
+                --stroke: color-mix(in lch, canvas, canvasText 75%);
+                --shine: hsl(210 20% 80% / 0.75);
+                --cap: color-mix(in lch, canvas, canvasText);
+                --filament: light-dark(orange, color-mix(in lch, canvas, canvasText 25%));
+                --bulb: transparent;
+                --width: 48px;
+                --flicker: linear(0 0%, 0.1864 6.17%, 0.0001 14.41%, 0.5244 20.97%, 0.3927 37.91%, 0.8115 60.62%, 0.9416 61.92%, 0.9928 67.98%, 0.5032 70.42%, 0.9077 96.96%, 0.6736 98.74%, 1 100%);
+            }
+            
+            h1 { --font-level: 7; margin: 0; }
+
+            form {
+                position: fixed;
+                width: var(--width);
+                aspect-ratio: 1;
+                top: 1rem;
+                right: 1rem;
+            }
+
+            form button {
+                width: 100%;
+                aspect-ratio: 1;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 3;
+                background: transparent;
+                border: 0;
+                padding: 0;
+                display: grid;
+                place-items: center;
+                cursor: pointer;
+            }
+
+            .grab-handle {
+                width: 48px;
+                aspect-ratio: 1;
+                border-radius: 50%;
+                position: absolute;
+                top: calc((48px * (0.35 / 2)) + ((48px * 0.65) * (125 / 48)));
+                left: 50%;
+                translate: -50% -50%;
+                z-index: 999999;
+            }
+
+            :root:has(#handle:checked) .grab-handle {
+                outline: 4px dashed canvasText;
+                background: hsl(10 100% 50% / 0.2);
+            }
+
+            .arrow {
+                width: 150%;
+                position: absolute;
+                right: 150%;
+                top: 250%;
+            }
+
+            .arrow label {
+                white-space: nowrap;
+                position: absolute;
+                top: 50%;
+                right: 110%;
+            }
+
+            .arrow svg { width: 100%; }
+
+            .toggle-scene {
+                overflow: visible !important;
+                position: absolute;
+                width: 65%;
+                top: 50%;
+                left: 50%;
+                translate: -50% -50%;
+            }
+            .toggle-scene__cord {
+                stroke: var(--cord);
+                stroke-width: 10;
+                cursor: move;
+            }
+            .toggle-scene__cord:not(:first-of-type) { display: none; }
+            .toggle-scene__cord-end { stroke: var(--cord); fill: var(--cord); }
+            .toggle-scene__dummy-cord { stroke-width: 10; stroke: var(--cord); }
+            .bulb__filament { stroke: var(--filament); stroke-width: 8; }
+            [data-theme='light'] .bulb__filament { stroke-width: 12; }
+            .bulb__shine { stroke: var(--shine); }
+            .bulb__bulb { stroke: var(--stroke); fill: var(--bulb); stroke-width: 10; }
+            .bulb__cap { fill: var(--cap); }
+            .bulb__cap-shine { fill: var(--shine); }
+            .bulb__cap-outline { stroke-width: 10; stroke: var(--stroke); }
+
+            .center { position: relative; }
+            .controls {
+                position: absolute;
+                display: grid;
+                grid-template-columns: auto 1fr;
+                gap: 0.5rem 1rem;
+                right: 0;
+                top: 100%;
+            }
+
+            label { font-family: 'Gloria Hallelujah', cursive; font-weight: 300; letter-spacing: 1px; }
+        }
+
+        @layer base {
+            *, *:after, *:before { box-sizing: border-box; }
+            :root {
+                --font-size-min: 16; --font-size-max: 20;
+                --font-ratio-min: 1.2; --font-ratio-max: 1.33;
+                --font-width-min: 375; --font-width-max: 1500;
+            }
+            :where(.fluid) {
+                --fluid-min: calc(var(--font-size-min) * pow(var(--font-ratio-min), var(--font-level, 0)));
+                --fluid-max: calc(var(--font-size-max) * pow(var(--font-ratio-max), var(--font-level, 0)));
+                --fluid-preferred: calc((var(--fluid-max) - var(--fluid-min)) / (var(--font-width-max) - var(--font-width-min)));
+                --fluid-type: clamp((var(--fluid-min) / 16) * 1rem, ((var(--fluid-min) / 16) * 1rem) - (((var(--fluid-preferred) * var(--font-width-min)) / 16) * 1rem) + (var(--fluid-preferred) * var(--variable-unit, 100vi)), (var(--fluid-max) / 16) * 1rem);
+                font-size: var(--fluid-type);
+            }
+            body {
+                display: grid; place-items: center; min-height: 100vh;
+                font-family: system-ui; background: canvas; color: canvasText;
+                overflow: hidden;
+            }
+            html { color-scheme: light dark; }
+            [data-theme='dark'] { color-scheme: dark only; }
+            [data-theme='light'] { color-scheme: light only; }
+            body::before {
+                --size: 45px; --line: color-mix(in lch, canvasText, transparent 70%);
+                content: ''; height: 100vh; width: 100vw; position: fixed;
+                background: linear-gradient(90deg, var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size),
+                            linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size);
+                mask: linear-gradient(-20deg, transparent 50%, white);
+                top: 0; z-index: -1; pointer-events: none;
+            }
+            .bear-link { color: canvasText; position: fixed; top: 1rem; left: 1rem; width: 48px; opacity: 0.8; }
+            .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── FLUID DESIGN TOKENS ── */
+:root {
+  --icon-size:   clamp(34px, 5vw, 60px);
+  --icon-r:      calc(var(--icon-size) * 0.22);
+  --dock-gap:    clamp(4px, 0.9vw, 10px);
+  --dock-px:     clamp(8px, 1.6vw, 18px);
+  --dock-py:     clamp(6px, 0.9vw, 12px);
+  --dock-r:      clamp(16px, 2.5vw, 26px);
+  --dock-bottom: clamp(8px, 2vh, 22px);
+  --sep-h:       calc(var(--icon-size) * 0.72);
+  --dlg-dark:    rgba(56,56,56,0.94);
+  --note-cream:  rgba(255,253,236,0.98);
+  --blue:        #3478f6;
+  --win-blue:    #000082;
+  --font:        'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html, body { width:100%; height:100%; overflow:hidden; font-family:var(--font); -webkit-font-smoothing:antialiased; }
+
+/* ── DESKTOP ── */
+#desktop {
+  position:relative; width:100dvw; height:100dvh; overflow:hidden;
+  background: linear-gradient(170deg, #c0b8a2 0%, #a6b686 22%, #7f9a68 48%, #698c50 70%, #768f58 100%);
+}
+[data-theme="dark"] #desktop {
+  background: linear-gradient(
+    170deg,
+    #0f0f12 0%,
+    #1a1a22 30%,
+    #111118 60%,
+    #0c0c10 100%
+  );
+}
+/* film grain */
+#desktop::after {
+  content:''; position:absolute; inset:0; pointer-events:none; opacity:.3;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+}
+
+/* ── DOCK ── */
+#dock {
+  position:fixed; bottom:var(--dock-bottom); left:50%; transform:translateX(-50%);
+  display:flex; align-items:flex-end; flex-wrap:nowrap;
+  gap:var(--dock-gap); padding:var(--dock-py) var(--dock-px);
+  background:rgba(255,255,255,0.13); border:1px solid rgba(255,255,255,0.26);
+  border-radius:var(--dock-r);
+  backdrop-filter:blur(34px) saturate(1.9); -webkit-backdrop-filter:blur(34px) saturate(1.9);
+  box-shadow:0 8px 40px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.22);
+  z-index:500; max-width:calc(100vw - 16px);
+}
+
+/* ── DOCK ICONS ── */
+.dock-icon {
+  width:var(--icon-size); height:var(--icon-size); border-radius:var(--icon-r);
+  cursor:pointer; flex-shrink:0; position:relative;
+  display:flex; align-items:center; justify-content:center;
+  user-select:none; -webkit-user-select:none;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1);
+  will-change:transform;
+}
+@media (hover:hover) { .dock-icon:hover { transform:translateY(-14px) scale(1.22); } }
+.dock-icon:active { transform:translateY(-8px) scale(1.1); }
+
+@keyframes iconBounce {
+  0%,100%{ transform:translateY(0) scale(1); }
+  30%    { transform:translateY(-22px) scale(1.18); }
+  55%    { transform:translateY(-6px) scale(1.06); }
+  75%    { transform:translateY(-14px) scale(1.12); }
+}
+.dock-icon.bouncing { animation:iconBounce .55s ease forwards; }
+
+/* Tooltip */
+@media (hover:hover) {
+  .dock-icon::before {
+    content:attr(data-label); position:absolute; bottom:calc(100% + 14px);
+    left:50%; transform:translateX(-50%);
+    background:rgba(14,14,14,.84); color:#fff;
+    font-size:clamp(10px,1vw,12px); font-weight:500;
+    padding:4px 10px; border-radius:6px; white-space:nowrap;
+    pointer-events:none; opacity:0; transition:opacity .15s; backdrop-filter:blur(8px);
+  }
+  .dock-icon:hover::before { opacity:1; }
+}
+
+/* Active dot */
+.dock-icon .dot {
+  position:absolute; bottom:-7px; left:50%; transform:translateX(-50%);
+  width:4px; height:4px; border-radius:50%;
+  background:rgba(255,255,255,.85); display:none;
+}
+.dock-icon.active .dot { display:block; }
+
+/* Close cloud */
+.click-cloud {
+  position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
+  font-size:clamp(8px,1vw,10px); text-align:center; line-height:1.25;
+  color:#333; font-weight:700;
+  width:clamp(46px,6vw,62px); padding:8px 5px;
+  background:radial-gradient(ellipse at 50% 65%,#fff 55%,#ddd 100%);
+  border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,.18);
+  pointer-events:none; display:none;
+  animation:cloudPop .28s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes cloudPop {
+  from{transform:translateX(-50%) scale(.4);opacity:0}
+  to  {transform:translateX(-50%) scale(1);opacity:1}
+}
+.dock-icon.active .click-cloud { display:block; }
+
+/* Separator */
+.dock-sep {
+  width:1px; height:var(--sep-h); background:rgba(255,255,255,.28);
+  align-self:center; flex-shrink:0; margin:0 clamp(1px,.3vw,4px);
+}
+
+/* Icon colours */
+.ic-figma  { background:#1a1a1a; }
+.ic-framer { background:#0a0a0a; }
+.ic-canva  { background:linear-gradient(135deg,#66d9f5,#9c57e8); }
+.ic-behance { background: #0057ff; }
+.ic-notes  { background:#ffe500; }
+.ic-li     { background:#0a66c2; }
+.ic-gh     { background:#161b22; }
+.ic-mail   { background:linear-gradient(145deg,#1c8ef9,#36c3ff); }
+.ic-insta  { background:linear-gradient(135deg,#7928ca,#e1306c,#f77737); }
+.ic-trash  { background:rgba(200,200,210,.2); border:1px solid rgba(255,255,255,.15); }
+
+/* ──────────────────────────────
+   DIALOGS — base
+────────────────────────────── */
+.dialog {
+  position:fixed; border-radius:16px; overflow:hidden;
+  box-shadow:0 24px 64px rgba(0,0,0,.55), 0 0 0 .5px rgba(255,255,255,.08);
+  display:none; z-index:300; cursor:default; user-select:none; -webkit-user-select:none;
+  width:min(var(--dlg-w,360px), calc(100vw - 24px));
+  animation:dlgPop .28s cubic-bezier(.34,1.56,.64,1) both;
+  transform-origin:bottom center;
+}
+.dialog.visible { display:block; }
+@keyframes dlgPop {
+  from{transform:scale(.72) translateY(10px);opacity:0}
+  to  {transform:scale(1)   translateY(0);  opacity:1}
+}
+
+/* Drag handle */
+.d-handle {
+  cursor:grab; touch-action:none;
+  padding:clamp(10px,1.2vh,14px) 16px;
+  font-weight:700; font-size:clamp(13px,1.2vw,15px);
+  text-align:center; border-bottom:1px solid rgba(255,255,255,.09);
+}
+.d-handle:active { cursor:grabbing; }
+
+/* Dialog body */
+.d-body { padding:clamp(12px,1.5vh,18px) clamp(12px,1.5vw,18px); display:flex; gap:14px; align-items:flex-start; }
+.d-app-icon { width:clamp(40px,5vw,52px); height:clamp(40px,5vw,52px); border-radius:11px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.d-text { font-size:clamp(13px,1.4vw,16px); line-height:1.55; color:#f0f0f0; flex:1; }
+.d-btn {
+  display:block; margin:clamp(8px,1vh,12px) auto 0;
+  background:var(--blue); color:#fff; border:none;
+  padding:clamp(7px,.8vh,9px) clamp(18px,2vw,26px);
+  border-radius:9px; font-size:clamp(13px,1.1vw,15px); font-weight:600;
+  cursor:pointer; transition:background .15s,transform .1s;
+}
+.d-btn:hover { background:#1a5ee0; transform:scale(1.03); }
+.d-btn:active { transform:scale(.97); }
+
+/* macOS dark */
+.d-mac { background:var(--dlg-dark); border:1px solid rgba(255,255,255,.13); backdrop-filter:blur(22px) saturate(1.6); -webkit-backdrop-filter:blur(22px) saturate(1.6); }
+.d-mac .d-handle { background:rgba(70,70,70,.75); color:#fff; }
+
+/* NOTE */
+#note-dialog { --dlg-w:520px; background:var(--note-cream); border:none; box-shadow:0 24px 60px rgba(0,0,0,.4),0 1px 0 rgba(0,0,0,.12); }
+.note-hdr {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:clamp(10px,1.2vh,14px) 16px clamp(8px,1vh,10px);
+  border-bottom:1px solid rgba(0,0,0,.08); cursor:grab; touch-action:none;
+}
+.note-hdr:active { cursor:grabbing; }
+.note-back { display:flex; align-items:center; gap:3px; color:#c8a000; font-size:clamp(13px,1.2vw,16px); font-weight:500; }
+.note-back svg { width:14px; height:14px; }
+.note-body {
+  padding:clamp(14px,2vh,22px) clamp(14px,2vw,22px) 8px;
+  font-size:clamp(13px,1.3vw,16px); line-height:1.7; color:#1c1c1e; font-weight:600;
+  max-height:clamp(180px,45vh,400px); overflow-y:auto;
+}
+.note-body p { margin-bottom:10px; }
+.note-resume {
+  display:block; margin:6px auto clamp(10px,1.5vh,18px);
+  background:rgba(0,0,0,.07); color:#1c1c1e; border:none;
+  padding:7px 20px; border-radius:8px;
+  font-size:clamp(12px,1.1vw,14px); font-weight:500; cursor:pointer;
+  transition:background .15s;
+}
+.note-resume:hover { background:rgba(0,0,0,.14); }
+.note-bar { display:flex; justify-content:space-around; padding:clamp(8px,1vh,12px) 16px; border-top:1px solid rgba(0,0,0,.07); color:#c8a000; }
+.note-bar svg { width:clamp(18px,2vw,24px); height:clamp(18px,2vw,24px); fill:none; stroke:currentColor; stroke-width:1.8; }
+
+/* WIN-98 TRASH */
+#trash-dialog { --dlg-w:360px; background:#d4d0c8; border:2px solid; border-color:#fff #808080 #808080 #fff; border-radius:0 !important; box-shadow:2px 2px 0 #000,0 12px 40px rgba(0,0,0,.4); }
+.win-bar { background:var(--win-blue); color:#fff; padding:4px 8px; display:flex; align-items:center; justify-content:space-between; font-family:'Tahoma',Arial,sans-serif; font-size:clamp(11px,1vw,13px); font-weight:bold; cursor:grab; touch-action:none; }
+.win-bar:active { cursor:grabbing; }
+.win-x { width:16px; height:16px; background:#d4d0c8; border:1px solid; border-color:#fff #808080 #808080 #fff; font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#000; box-shadow:inset -1px -1px 0 #808080; flex-shrink:0; }
+.win-body { padding:clamp(12px,1.5vh,18px) clamp(14px,2vw,20px); display:flex; gap:14px; align-items:flex-start; }
+.win-body .t-ico { font-size:clamp(30px,4vw,44px); flex-shrink:0; }
+.win-body p { font-family:'Tahoma',Arial,sans-serif; font-size:clamp(12px,1.1vw,14px); font-weight:bold; color:#000; line-height:1.5; }
+.win-btn { display:block; margin:0 auto clamp(10px,1.5vh,16px); background:#d4d0c8; border:1px solid; border-color:#fff #808080 #808080 #fff; padding:4px clamp(14px,2vw,22px); font-family:'Tahoma',Arial,sans-serif; font-size:clamp(11px,1vw,13px); cursor:pointer; box-shadow:inset -1px -1px 0 #808080; }
+.win-btn:hover { background:#c0bdb5; }
+.win-btn:active { border-color:#808080 #fff #fff #808080; }
+
+/* ════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+════════════════════════════════ */
+
+/* ── MOBILE portrait (≤ 600px) ── */
+@media (max-width:600px) {
+  /* Dialogs → bottom sheets */
+  .dialog {
+    width:100% !important; max-width:100% !important;
+    border-radius:22px 22px 0 0 !important;
+    bottom:0 !important; left:0 !important; top:auto !important;
+    animation:sheetUp .32s cubic-bezier(.32,.72,0,1) both;
+    transform-origin:bottom center;
+  }
+  @keyframes sheetUp {
+    from{transform:translateY(105%);opacity:.5}
+    to  {transform:translateY(0);opacity:1}
+  }
+  /* Swipe pill indicator */
+  .d-handle::before, .note-hdr::before {
+    content:''; display:block; width:36px; height:4px;
+    background:rgba(0,0,0,.18); border-radius:2px; margin:0 auto 8px;
+  }
+  .win-bar::before {
+    content:''; display:block; width:36px; height:4px;
+    background:rgba(255,255,255,.4); border-radius:2px; margin:0 auto 8px;
+  }
+
+  /* Override border-radius for Win98 on mobile — needs rounded top */
+  #trash-dialog { border-radius:22px 22px 0 0 !important; }
+
+  /* No close cloud on touch */
+  .click-cloud { display:none !important; }
+
+  /* Smaller dock on narrow screens */
+  :root { --icon-size:clamp(32px,9vw,44px); --dock-gap:clamp(3px,1.5vw,7px); --dock-px:clamp(6px,2vw,12px); }
+  .note-body { max-height:36vh; }
+  #dock { bottom:6px; }
+
+  /* Hide Photos and separators to save space on very narrow */
+  @media (max-width:360px) {
+    .ic-photos, .dock-sep:nth-of-type(2) { display:none; }
+  }
+}
+
+/* ── TABLET (601–1024px) ── */
+@media (min-width:601px) and (max-width:1024px) {
+  :root { --icon-size:clamp(42px,5.5vw,54px); --dock-gap:clamp(6px,1vw,9px); }
+  .dialog { --dlg-w:min(420px,78vw); }
+}
+
+/* ── LARGE DESKTOP (≥ 1440px) ── */
+@media (min-width:1440px) {
+  :root { --icon-size:64px; --dock-gap:11px; --dock-px:20px; --dock-py:13px; --dock-r:26px; }
+}
+
+/* ── LANDSCAPE PHONE ── */
+@media (max-height:480px) and (orientation:landscape) {
+  :root { --icon-size:36px; --dock-bottom:6px; }
+  .dialog {
+    width:min(360px,calc(100vw - 24px)) !important; border-radius:14px !important;
+    bottom:auto !important; animation:dlgPop .28s cubic-bezier(.34,1.56,.64,1) both !important;
+  }
+  #note-dialog { --dlg-w:460px; }
+  .note-body { max-height:28vh; }
+  .click-cloud { display:none !important; }
+  /* don't show pill in landscape */
+  .d-handle::before, .note-hdr::before, .win-bar::before { display:none !important; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion:reduce) {
+  .dialog, .dock-icon, .click-cloud { animation:none !important; transition:none !important; }
+}
+    </style>
+</head>
+<body>
+
+    <div id="desktop">
+
+  <!-- ══ DIALOGS ══ -->
+
+  <!-- NOTE / ABOUT -->
+  <div class="dialog" id="note-dialog">
+    <div class="note-hdr" id="note-handle">
+      <div class="note-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Notas
+      </div>
+      <div style="font-size:16px;color:#999;">···</div>
+    </div>
+    <div class="note-body">
+      <p><strong>Hello there,</strong><br>My name is Jiya Batra, and this is my portfolio — I call it "Files of a Designer."</p>
+      <p>I'm a UI/UX designer with a Computer Science background.<br>Strange combo, right?</p>
+      <p>Yes, it is. But not in my designs.<br>I think in logic and design in empathy.<br>I care about how things work just as much as how they look.</p>
+      <p>Clean interfaces, thoughtful interactions, and decisions backed by reason — not guesswork.<br>Hire me because I don't just design screens. I design clarity.</p>
+    </div>
+    <a href="https://drive.google.com/file/d/1QFVi5qYBZiuUkr4HtRH4P9UTfLUJiqKw/view?usp=drive_link" target="_blank" style="text-decoration: none; display: block;">
+    <button class="note-resume">Download Resume</button>
+    </a>
+    <div class="note-bar">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="9 12 11 14 15 10"/></svg>
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
+    </div>
+  </div>
+
+  <!-- FIGMA -->
+  <div class="dialog d-mac" id="figma-dialog">
+    <div class="d-handle" id="figma-handle">Figma</div>
+    <div class="d-body">
+      <div class="d-app-icon ic-figma">
+        <svg width="28" height="40" viewBox="0 0 38 57" fill="none">
+          <path d="M19 28.5C19 23.53 23.03 19.5 28 19.5s9 4.03 9 9-4.03 9-9 9-9-4.03-9-9z" fill="#1ABCFE"/>
+          <path d="M1 47.5C1 42.53 5.03 38.5 10 38.5H19V47.5C19 52.47 14.97 56.5 10 56.5S1 52.47 1 47.5z" fill="#0ACF83"/>
+          <path d="M19 1.5V19.5H28C32.97 19.5 37 15.47 37 10.5S32.97 1.5 28 1.5H19z" fill="#FF7262"/>
+          <path d="M1 10.5C1 15.47 5.03 19.5 10 19.5H19V1.5H10C5.03 1.5 1 5.53 1 10.5z" fill="#F24E1E"/>
+          <path d="M1 28.5C1 33.47 5.03 37.5 10 37.5H19V19.5H10C5.03 19.5 1 23.53 1 28.5z" fill="#A259FF"/>
+        </svg>
+      </div>
+      <div>
+        <div class="d-text">I use Figma because I'm a broke student.<br>Adobe asked for my kidney.<br>Figma just asked for WiFi.</div>
+        <button class="d-btn" onclick="window.open('https://www.figma.com','_blank')">Design Anyway</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRAMER -->
+  <div class="dialog d-mac" id="framer-dialog">
+    <div class="d-handle" id="framer-handle">Framer</div>
+    <div class="d-body">
+      <div class="d-app-icon ic-framer">
+        <svg width="36" height="44" viewBox="0 0 100 120" fill="none">
+          <path d="M0 0h100L50 60H0V0z" fill="white"/>
+          <path d="M0 60h50l50 60H0V60z" fill="rgba(255,255,255,.45)"/>
+        </svg>
+      </div>
+      <div>
+        <div class="d-text">I use Framer because static portfolios are boring.<br>If it doesn't move, did I even design it?</div>
+        <button class="d-btn" onclick="window.open('https://www.framer.com','_blank')">Watch It Move</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CANVA -->
+  <div class="dialog d-mac" id="canva-dialog">
+    <div class="d-handle" id="canva-handle">Canva</div>
+    <div class="d-body">
+      <div class="d-app-icon ic-canva" style="font-family:serif;font-style:italic;font-weight:700;color:#fff;font-size:clamp(22px,3vw,30px);">C</div>
+      <div>
+        <div class="d-text">I use Canva because sometimes the client's budget is emotionally closer to MS Paint.</div>
+        <button class="d-btn" onclick="window.open('https://www.canva.com','_blank')">Make It Work</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRASH win98 -->
+  <div class="dialog" id="trash-dialog">
+    <div class="win-bar" id="trash-handle">
+      <span>Files of a Designer by JIYA BATRA</span>
+      <div class="win-x" onclick="closeDialog('trash')">✕</div>
+    </div>
+    <div class="win-body">
+      <div class="t-ico">🗑️</div>
+      <p>Seriously? You opened the bin expecting something exciting?</p>
+    </div>
+    <button class="win-btn" onclick="closeDialog('trash')">Emotional Damage...</button>
+  </div>
+
+  <!-- ══ DOCK ══ -->
+  <nav id="dock" aria-label="App dock">
+
+    <div class="dock-icon ic-figma" data-label="Figma" data-dialog="figma" onclick="toggleDialog('figma',this)" tabindex="0" role="button" aria-label="Open Figma info">
+      <svg width="55%" height="75%" viewBox="0 0 38 57" fill="none">
+        <path d="M19 28.5C19 23.53 23.03 19.5 28 19.5s9 4.03 9 9-4.03 9-9 9-9-4.03-9-9z" fill="#1ABCFE"/>
+        <path d="M1 47.5C1 42.53 5.03 38.5 10 38.5H19V47.5C19 52.47 14.97 56.5 10 56.5S1 52.47 1 47.5z" fill="#0ACF83"/>
+        <path d="M19 1.5V19.5H28C32.97 19.5 37 15.47 37 10.5S32.97 1.5 28 1.5H19z" fill="#FF7262"/>
+        <path d="M1 10.5C1 15.47 5.03 19.5 10 19.5H19V1.5H10C5.03 1.5 1 5.53 1 10.5z" fill="#F24E1E"/>
+        <path d="M1 28.5C1 33.47 5.03 37.5 10 37.5H19V19.5H10C5.03 19.5 1 23.53 1 28.5z" fill="#A259FF"/>
+      </svg>
+      <div class="dot"></div><div class="click-cloud">Click Again To close</div>
+    </div>
+
+    <div class="dock-icon ic-framer" data-label="Framer" data-dialog="framer" onclick="toggleDialog('framer',this)" tabindex="0" role="button" aria-label="Open Framer info">
+      <svg width="55%" height="65%" viewBox="0 0 100 120" fill="none">
+        <path d="M0 0h100L50 60H0V0z" fill="white"/>
+        <path d="M0 60h50l50 60H0V60z" fill="rgba(255,255,255,.45)"/>
+      </svg>
+      <div class="dot"></div><div class="click-cloud">Click Again To close</div>
+    </div>
+
+    <div class="dock-icon ic-canva" data-label="Canva" data-dialog="canva" onclick="toggleDialog('canva',this)" tabindex="0" role="button" aria-label="Open Canva info">
+      <span style="font-family:serif;font-style:italic;font-weight:700;color:white;font-size:clamp(16px,3vw,26px);">C</span>
+      <div class="dot"></div><div class="click-cloud">Click Again To close</div>
+    </div>
+    
+    <div class="dock-icon ic-behance" 
+     data-label="Behance" 
+     onclick="openLink('https://www.behance.net/jiya17batra',this)" 
+     tabindex="0" 
+     role="link">
+    <svg width="65%" height="65%" viewBox="0 0 24 24" fill="white">
+    <path d="M22 7h-7v2h7V7zm-1.5 5h-4c-.3 0-.5.2-.5.5v3c0 .3.2.5.5.5h4c.3 0 .5-.2.5-.5v-3c0-.3-.2-.5-.5-.5zm-4.5 3.5v-2h3v2h-3zM8.5 7H3v10h5.5c2.5 0 3.5-1.5 3.5-3s-.8-2-1.8-2.5c.8-.3 1.3-1 1.3-2.3 0-1.5-1-2.2-3-2.2zm-3.5 1.5h2.5c1 0 1.5.4 1.5 1s-.5 1-1.5 1H5v-2zm3 7H5v-2.5h3c1.1 0 1.6.5 1.6 1.2 0 .8-.5 1.3-1.6 1.3z"/>
+    </svg>
+    <div class="dot"></div>
+    </div>
+
+    <div class="dock-sep"></div>
+
+    <div class="dock-icon ic-notes" data-label="Notes" data-dialog="note" onclick="toggleDialog('note',this)" tabindex="0" role="button" aria-label="Open about note">
+      <svg width="88%" height="88%" viewBox="0 0 60 60">
+        <rect width="60" height="60" rx="14" fill="#FFE500"/>
+        <rect x="8" y="13" width="44" height="5" rx="2.5" fill="rgba(0,0,0,.18)"/>
+        <rect x="8" y="23" width="38" height="3.5" rx="1.75" fill="rgba(0,0,0,.13)"/>
+        <rect x="8" y="31" width="40" height="3.5" rx="1.75" fill="rgba(0,0,0,.13)"/>
+        <rect x="8" y="39" width="30" height="3.5" rx="1.75" fill="rgba(0,0,0,.13)"/>
+      </svg>
+      <div class="dot"></div><div class="click-cloud">Click Again To close</div>
+    </div>
+
+    <div class="dock-sep"></div>
+
+    <div class="dock-icon ic-li" data-label="LinkedIn" onclick="openLink('https://www.linkedin.com/in/jiya-batra/',this)" tabindex="0" role="link" aria-label="LinkedIn">
+      <svg width="62%" height="62%" viewBox="0 0 24 24" fill="white">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+      </svg>
+      <div class="dot"></div>
+    </div>
+
+    <div class="dock-icon ic-gh" data-label="GitHub" onclick="openLink('https://github.com/jiya17batra',this)" tabindex="0" role="link" aria-label="GitHub">
+      <svg width="65%" height="65%" viewBox="0 0 24 24" fill="white">
+        <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+      </svg>
+      <div class="dot"></div>
+    </div>
+
+    <div class="dock-icon ic-mail" data-label="Mail" onclick="openLink('mailto:jiya17batra@gmail.com',this)" tabindex="0" role="link" aria-label="Email">
+      <svg width="65%" height="65%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">
+        <rect x="2" y="4" width="20" height="16" rx="2"/>
+        <polyline points="2,4 12,13 22,4"/>
+      </svg>
+      <div class="dot"></div>
+    </div>
+
+    <div class="dock-icon ic-insta" data-label="Instagram" onclick="openLink('https://www.instagram.com/sunsets2suitcases/',this)" tabindex="0" role="link" aria-label="Instagram">
+      <svg width="60%" height="60%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">
+        <rect x="2" y="2" width="20" height="20" rx="5.5"/>
+        <circle cx="12" cy="12" r="4.5"/>
+        <circle cx="17.5" cy="6.5" r="1.1" fill="white" stroke="none"/>
+      </svg>
+      <div class="dot"></div>
+    </div>
+
+    <div class="dock-sep"></div>
+
+    <div class="dock-icon ic-trash" data-label="Trash" data-dialog="trash" onclick="toggleDialog('trash',this)" tabindex="0" role="button" aria-label="Trash">
+      <span style="font-size:clamp(18px,3vw,32px);filter:grayscale(.2);">🗑️</span>
+      <div class="dot"></div><div class="click-cloud">Click Again To close</div>
+    </div>
+
+  </nav>
+</div>
+
+    <div class="center">
+      <h1 class="fluid">lights off.</h1>
+      <div class="controls">
+        <input type="checkbox" id="flicker" />
+        <label for="flicker">flicker lights on.</label>
+        <input type="checkbox" id="handle" />
+        <label for="handle">show drag handle.</label>
+      </div>
+    </div>
+
+    <form>
+      <div class="arrow">
+        <label>drag me.</label>
+        <svg aria-hidden="true" viewBox="0 0 144 141" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M129.189 0.0490494C128.744 0.119441 126.422 0.377545 124.03 0.635648C114.719 1.6446 109.23 2.4893 108.058 3.09936C107.119 3.56864 106.674 4.34295 106.674 5.44576C106.674 6.71281 107.424 7.51058 109.043 7.97986C110.403 8.37875 110.825 8.42567 118.87 9.52847C121.778 9.92736 124.288 10.3028 124.475 10.3732C124.663 10.4436 122.951 11.1006 120.676 11.8749C110.028 15.4414 100.412 20.7677 91.7339 27.9242C88.38 30.7164 81.6957 37.4271 79.2096 40.5009C73.8387 47.2116 69.6874 54.8139 66.5681 63.7302C65.9348 65.4665 65.3484 66.8978 65.2546 66.8978C65.1374 66.8978 63.7771 66.7336 62.2291 66.5693C52.9649 65.5134 43.1847 68.1649 34.1316 74.2186C24.7735 80.46 18.5349 87.7338 10.5371 101.742C2.53943 115.726 -1.0959 127.482 0.287874 135.014C0.89767 138.463 2.0469 140.035 3.97011 140.082C5.28352 140.105 5.37733 139.659 4.20465 139.049C3.05541 138.463 2.6567 137.9 2.32835 136.281C0.616228 128.021 6.24512 113.028 17.4325 96.1104C23.2725 87.241 28.362 81.9147 35.5622 77.1046C43.8649 71.5437 52.7069 69.033 61.1737 69.8308C64.9967 70.1828 64.6917 69.9247 64.1992 72.4822C62.2525 82.5013 63.8005 92.6378 67.9753 97.354C73.1116 103.079 81.9771 102 85.0027 95.2657C86.3395 92.2858 86.3864 87.7103 85.1434 83.9796C83.1498 78.0901 80.007 73.8197 75.4335 70.8163C73.8152 69.7604 70.4848 68.1883 69.875 68.1883C69.359 68.1883 69.4294 67.6487 70.2268 65.3257C72.3377 59.2486 75.457 52.7021 78.4122 48.244C83.2436 40.9232 91.4524 32.5701 99.1687 27.103C105.806 22.4102 113.241 18.5386 120.512 16.0045C123.772 14.8548 129.87 13.1889 130.081 13.3766C130.128 13.447 129.541 14.362 128.791 15.4414C124.78 21.0258 122.716 26.0706 122.388 30.998C122.224 33.7198 122.341 34.588 122.88 34.2595C122.998 34.1891 123.678 32.969 124.405 31.5611C126.281 27.8069 131.722 20.6738 139.579 11.6402C141.127 9.85697 142.652 7.86254 143.027 7.08823C144.552 4.03792 143.52 1.48035 140.377 0.471397C139.439 0.166366 138.102 0.0490408 134.584 0.0255769C132.074 -0.021351 129.635 0.00212153 129.189 0.0490494ZM137.117 4.92955C137.187 5.0234 136.718 5.63346 136.061 6.29045L134.865 7.48712L131.042 6.73627C128.931 6.33739 126.727 5.9385 126.14 5.8681C124.827 5.68039 124.123 5.32843 124.968 5.28151C125.296 5.28151 126.868 5.11725 128.486 4.953C131.3 4.64797 136.812 4.62451 137.117 4.92955ZM71.5168 72.5292C76.2075 74.899 79.4441 78.8175 81.3204 84.355C83.6189 91.1361 81.2266 96.8378 76.0433 96.8847C73.3227 96.9082 70.9773 95.2188 69.5936 92.2389C68.2802 89.4232 67.6938 86.5606 67.5765 82.1259C67.4593 78.3248 67.6 76.4242 68.2333 72.7403L68.4912 71.2856L69.359 71.5906C69.8515 71.7548 70.8132 72.1772 71.5168 72.5292Z" fill="currentColor" />
+        </svg>
+      </div>
+      <button type="submit" aria-pressed="false">
+        <span class="sr-only">Toggle theme</span>
+        <svg aria-hidden="true" class="toggle-scene" xmlns="http://www.w3.org/2000/svg" viewBox="32 32 134 134">
+          <defs>
+            <marker id="a" orient="auto" overflow="visible" refx="0" refy="0">
+              <path class="toggle-scene__cord-end" fill-rule="evenodd" stroke-width=".2666" d="M.98 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+            </marker>
+            <clippath id="g" clippathunits="userSpaceOnUse">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4.677" d="M-774.546 827.629s12.917-13.473 29.203-13.412c16.53.062 29.203 13.412 29.203 13.412v53.6s-8.825 16-29.203 16c-21.674 0-29.203-16-29.203-16z"></path>
+            </clippath>
+          </defs>
+          <g class="toggle-scene__cords">
+            <path class="toggle-scene__cord" marker-end="url(#a)" fill="none" stroke-linecap="square" stroke-width="6" d="M123.228-28.56v150.493" transform="translate(-24.503 256.106)"></path>
+            <path class="toggle-scene__cord" d="M123.228-28.59s28 8.131 28 19.506-18.667 13.005-28 19.507c-9.333 6.502-28 8.131-28 19.506s28 19.507 28 19.507" transform="translate(-24.503 256.106)"></path>
+            <path class="toggle-scene__cord" d="M123.228-28.575s-20 16.871-20 28.468c0 11.597 13.333 18.978 20 28.468 6.667 9.489 20 16.87 20 28.467 0 11.597-20 28.468-20 28.468" transform="translate(-24.503 256.106)"></path>
+            <path class="toggle-scene__cord" d="M123.228-28.569s16 20.623 16 32.782c0 12.16-10.667 21.855-16 32.782-5.333 10.928-16 20.623-16 32.782 0 12.16 16 32.782 16 32.782" transform="translate(-24.503 256.106)"></path>
+            <path class="toggle-scene__cord" d="M123.228-28.563s-10 24.647-10 37.623c0 12.977 6.667 25.082 10 37.623 3.333 12.541 10 24.647 10 37.623 0 12.977-10 37.623-10 37.623" transform="translate(-24.503 256.106)"></path>
+            
+            <g class="line toggle-scene__dummy-cord">
+              <line marker-end="url(#a)" x1="98" x2="98" y1="240" y2="380"></line>
+            </g>
+          </g>
+          <g class="toggle-scene__bulb bulb" transform="translate(844.069 -645.213)">
+            <path class="bulb__cap" d="M-774.546 827.629s12.917-13.473 29.203-13.412c16.53.062 29.203 13.412 29.203 13.412v53.6s-8.825 16-29.203 16c-21.674 0-29.203-16-29.203-16z"></path>
+            <path class="bulb__cap-shine" d="M-778.379 802.873h25.512v118.409h-25.512z" clip-path="url(#g)" transform="matrix(.52452 0 0 .90177 -368.282 82.976)"></path>
+            <path class="bulb__bulb" stroke-linecap="round" stroke-width="5" d="M-783.192 803.855c5.251 8.815 5.295 21.32 13.272 27.774 12.299 8.045 36.46 8.115 49.127 0 7.976-6.454 8.022-18.96 13.273-27.774 3.992-6.7 14.408-19.811 14.408-19.811 8.276-11.539 12.769-24.594 12.769-38.699 0-35.898-29.102-65-65-65-35.899 0-65 29.102-65 65 0 13.667 4.217 26.348 12.405 38.2 0 0 10.754 13.61 14.746 20.31z"></path>
+            <g class="bulb__filament" fill="none" stroke-linecap="round" stroke-width="5">
+                <path d="M-752.914 823.875l-8.858-33.06"></path>
+                <path d="M-737.772 823.875l8.858-33.06"></path>
+            </g>
+          </g>
+        </svg>
+        <div class="grab-handle"></div>
+      </button>
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
+    <script src="https://assets.codepen.io/16327/MorphSVGPlugin3.min.js"></script>
+
+    <script>
+        document.documentElement.dataset.theme = 'dark';
+
+        // Check if MorphSVG is available (it's a premium plugin)
+        const hasMorph = typeof MorphSVGPlugin !== 'undefined';
+        if (hasMorph) gsap.registerPlugin(MorphSVGPlugin);
+        gsap.registerPlugin(Draggable);
+
+        let startX, startY;
+        const AUDIO = { CLICK: new Audio('https://assets.codepen.io/605876/click.mp3') };
+        const heading = document.querySelector('h1');
+        const CORD_DURATION = 0.1;
+        const CORDS = document.querySelectorAll('.toggle-scene__cord');
+        const HIT = document.querySelector('.grab-handle');
+        const DUMMY = document.querySelector('.toggle-scene__dummy-cord');
+        const DUMMY_CORD = document.querySelector('.toggle-scene__dummy-cord line');
+        const FORM = document.querySelector('form');
+        const TOGGLE = FORM.querySelector('button');
+        const PROXY = document.createElement('div');
+
+        const ENDX = DUMMY_CORD.getAttribute('x2');
+        const ENDY = DUMMY_CORD.getAttribute('y2');
+
+        const RESET = () => {
+            gsap.set(PROXY, { x: ENDX, y: ENDY });
+        };
+        RESET();
+
+        const toggle = () => {
+            AUDIO.CLICK.play();
+            const isPressed = TOGGLE.getAttribute('aria-pressed') === 'true';
+            const nextTheme = isPressed ? 'dark' : 'light';
+            TOGGLE.setAttribute('aria-pressed', !isPressed);
+            document.documentElement.dataset.theme = nextTheme;
+            heading.innerText = `lights ${nextTheme === 'light' ? 'on' : 'off'}.`;
+        };
+
+        FORM.addEventListener('submit', (event) => {
+            event.preventDefault();
+            if (!document.startViewTransition) return toggle();
+            document.startViewTransition(() => toggle());
+        });
+
+        // Pull Animation Timeline
+        const CORD_TL = gsap.timeline({
+            paused: true,
+            onStart: () => {
+                FORM.dispatchEvent(new Event('submit'));
+                gsap.set([DUMMY, HIT], { display: 'none' });
+                gsap.set(CORDS[0], { display: 'block' });
+            },
+            onComplete: () => {
+                gsap.set([DUMMY, HIT], { display: 'block' });
+                gsap.set(CORDS[0], { display: 'none' });
+                RESET();
+            },
+        });
+
+        if (hasMorph) {
+            for (let i = 1; i < CORDS.length; i++) {
+                CORD_TL.add(
+                    gsap.to(CORDS[0], {
+                        morphSVG: CORDS[i],
+                        duration: CORD_DURATION,
+                        repeat: 1,
+                        yoyo: true,
+                    })
+                );
+            }
+        }
+
+        Draggable.create(PROXY, {
+            trigger: HIT,
+            type: 'x,y',
+            onPress: (e) => {
+                startX = e.x;
+                startY = e.y;
+            },
+            onDragStart: () => {
+                document.documentElement.style.setProperty('cursor', 'grabbing');
+            },
+            onDrag: function () {
+                const ratio = 1 / ((FORM.offsetWidth * 0.65) / 134);
+                gsap.set(DUMMY_CORD, {
+                    attr: {
+                        x2: 98 + (this.x - ENDX) * ratio,
+                        y2: 380 + (this.y - ENDY) * ratio,
+                    },
+                });
+            },
+            onRelease: (e) => {
+                const DISTX = Math.abs(e.x - startX);
+                const DISTY = Math.abs(e.y - startY);
+                const TRAVELLED = Math.sqrt(DISTX * DISTX + DISTY * DISTY);
+                document.documentElement.style.setProperty('cursor', 'unset');
+                
+                gsap.to(DUMMY_CORD, {
+                    attr: { x2: ENDX, y2: ENDY },
+                    duration: CORD_DURATION,
+                    onComplete: () => {
+                        if (TRAVELLED > 50) {
+                            CORD_TL.restart();
+                        } else {
+                            RESET();
+                        }
+                    },
+                });
+            },
+        });
+    </script>
+    <script>
+/* ═══════ HELPERS ═══════ */
+const isMobile = () => !window.matchMedia('(hover:hover)').matches || window.innerWidth <= 600;
+const isLandscape = () => window.innerHeight < 480 && window.innerWidth > window.innerHeight;
+
+/* ═══════ DIALOG STATE ═══════ */
+const dlg = {
+  figma:  document.getElementById('figma-dialog'),
+  framer: document.getElementById('framer-dialog'),
+  canva:  document.getElementById('canva-dialog'),
+  note:   document.getElementById('note-dialog'),
+  trash:  document.getElementById('trash-dialog'),
+};
+const hdl = {
+  figma:  document.getElementById('figma-handle'),
+  framer: document.getElementById('framer-handle'),
+  canva:  document.getElementById('canva-handle'),
+  note:   document.getElementById('note-handle'),
+  trash:  document.getElementById('trash-handle'),
+};
+
+/* Default desktop positions (% strings) */
+const DEF_POS = {
+  figma:  {top:'9%',  left:'4%'},
+  framer: {top:'9%',  left:'28%'},
+  canva:  {top:'38%', left:'50%'},
+  note:   {top:'5%',  left:'32%'},
+  trash:  {top:'14%', left:'60%'},
+};
+
+let topZ = 300;
+const front = el => { el.style.zIndex = ++topZ; };
+
+function setDefaultPos(key) {
+  /* On mobile sheet, CSS controls position — don't override */
+  if ((isMobile() || window.innerWidth <= 600) && !isLandscape()) return;
+  const d = dlg[key];
+  if (!d.dataset.moved) {
+    d.style.top  = DEF_POS[key].top;
+    d.style.left = DEF_POS[key].left;
+    d.style.bottom = '';
+  }
+}
+
+function toggleDialog(key, iconEl) {
+  const d = dlg[key];
+  if (d.classList.contains('visible')) {
+    closeDialog(key);
+  } else {
+    setDefaultPos(key);
+    d.classList.add('visible');
+    front(d);
+    if (iconEl) {
+      iconEl.classList.add('active');
+      iconEl.classList.add('bouncing');
+      setTimeout(() => iconEl.classList.remove('bouncing'), 600);
+    }
+  }
+}
+
+function closeDialog(key) {
+  dlg[key].classList.remove('visible');
+  document.querySelectorAll('.dock-icon').forEach(el => {
+    if (el.dataset.dialog === key) el.classList.remove('active');
+  });
+}
+
+function openLink(url, el) {
+  window.open(url, '_blank');
+  if (el) { el.classList.add('bouncing'); setTimeout(() => el.classList.remove('bouncing'), 600); }
+}
+function bounceDock(el) { el.classList.add('bouncing'); setTimeout(() => el.classList.remove('bouncing'), 600); }
+
+/* ═══════ KEYBOARD ═══════ */
+document.querySelectorAll('.dock-icon').forEach(el => {
+  el.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); el.click(); } });
+});
+
+/* ═══════ DRAGGABLE (desktop + landscape) ═══════ */
+function makeDraggable(dialog, handle) {
+  let sx, sy, sl, st, active = false;
+
+  const start = e => {
+    if ((window.innerWidth <= 600 || isMobile()) && !isLandscape()) return;
+    active = true; front(dialog);
+    const p = e.touches ? e.touches[0] : e;
+    sx = p.clientX; sy = p.clientY;
+    const r = dialog.getBoundingClientRect();
+    sl = r.left; st = r.top;
+    document.addEventListener('mousemove', move);
+    document.addEventListener('touchmove', move, {passive:false});
+    document.addEventListener('mouseup', end);
+    document.addEventListener('touchend', end);
+    if (e.cancelable) e.preventDefault();
+  };
+
+  const move = e => {
+    if (!active) return;
+    const p = e.touches ? e.touches[0] : e;
+    const dockEl = document.getElementById('dock');
+    const dockSafe = dockEl.offsetHeight + 32;
+    const newL = Math.max(0, Math.min(window.innerWidth  - dialog.offsetWidth,  sl + p.clientX - sx));
+    const newT = Math.max(0, Math.min(window.innerHeight - dialog.offsetHeight - dockSafe, st + p.clientY - sy));
+    dialog.style.left = newL + 'px';
+    dialog.style.top  = newT + 'px';
+    dialog.style.bottom = '';
+    dialog.dataset.moved = '1';
+    if (e.cancelable) e.preventDefault();
+  };
+
+  const end = () => {
+    active = false;
+    document.removeEventListener('mousemove', move);
+    document.removeEventListener('touchmove', move);
+    document.removeEventListener('mouseup', end);
+    document.removeEventListener('touchend', end);
+  };
+
+  handle.addEventListener('mousedown', start);
+  handle.addEventListener('touchstart', start, {passive:false});
+}
+
+/* Init drag + front-on-click */
+Object.keys(dlg).forEach(key => {
+  makeDraggable(dlg[key], hdl[key]);
+  dlg[key].addEventListener('pointerdown', () => front(dlg[key]));
+});
+
+/* ═══════ RE-CLAMP ON RESIZE ═══════ */
+window.addEventListener('resize', () => {
+  Object.values(dlg).forEach(d => {
+    if (!d.classList.contains('visible') || !d.dataset.moved) return;
+    const dockEl = document.getElementById('dock');
+    const dockSafe = dockEl.offsetHeight + 32;
+    const r = d.getBoundingClientRect();
+    d.style.left = Math.max(0, Math.min(window.innerWidth  - d.offsetWidth,  r.left)) + 'px';
+    d.style.top  = Math.max(0, Math.min(window.innerHeight - d.offsetHeight - dockSafe, r.top))  + 'px';
+  });
+});
+
+/* ═══════ AUTO-OPEN NOTE ═══════ */
+setTimeout(() => {
+  const noteIcon = document.querySelector('[data-dialog="note"]');
+  toggleDialog('note', noteIcon);
+}, 700);
+</script>
+<script>
+const form = document.querySelector("form");
+const root = document.documentElement;
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const currentTheme = root.getAttribute("data-theme");
+
+  if (currentTheme === "dark") {
+    root.setAttribute("data-theme", "light");
+  } else {
+    root.setAttribute("data-theme", "dark");
+  }
+});
+</script>
+<script>
+const root = document.documentElement;
+const form = document.querySelector("form");
+
+let dark = false;
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  dark = !dark;
+
+  if (dark) {
+    root.setAttribute("data-theme", "dark");
+  } else {
+    root.setAttribute("data-theme", "light");
+  }
+});
+</script>
+</body>
+</html>
