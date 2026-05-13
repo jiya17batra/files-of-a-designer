@@ -1,4 +1,4 @@
-# Files-of-a-Designer
+# Interactive Portfolio
 
 An interactive portfolio blending design, motion, and storytelling.  
 Built with creativity, code, and a little chaos.
@@ -8,7 +8,7 @@ Built with creativity, code, and a little chaos.
 ## 🌐 Live Preview
 
 🔗 **View the Portfolio Here:**  
-https://jiya17batra.github.io/Files-of-a-Designer/
+https://jiya17batra.github.io/Interactive-Portfolio
 
 ---
 
